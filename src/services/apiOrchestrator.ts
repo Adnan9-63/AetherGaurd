@@ -360,38 +360,32 @@ export function generateRealisticFallbackDataset(
     }
   }
 
-  const stationsNearby: StationPin[] = [
-    {
-      uid: `st-local-1`,
-      name: `${locationName} Central Urban Station`,
-      latitude: Number((lat + 0.02).toFixed(4)),
-      longitude: Number((lon - 0.03).toFixed(4)),
-      aqi: dualIndices.cpcb.aqi,
-      distanceKm: 2.8,
-      source: 'OPEN_METEO_CAMS',
-      updatedAtISO: now.toISOString(),
-    },
-    {
-      uid: `st-local-2`,
-      name: `${locationName} Industrial Corridor`,
-      latitude: Number((lat - 0.04).toFixed(4)),
-      longitude: Number((lon + 0.05).toFixed(4)),
-      aqi: Math.round(dualIndices.cpcb.aqi * 1.18),
-      distanceKm: 5.6,
-      source: 'OPEN_METEO_CAMS',
-      updatedAtISO: now.toISOString(),
-    },
-    {
-      uid: `st-local-3`,
-      name: `${locationName} Green Botanical Reserve`,
-      latitude: Number((lat + 0.06).toFixed(4)),
-      longitude: Number((lon + 0.02).toFixed(4)),
-      aqi: Math.max(25, Math.round(dualIndices.cpcb.aqi * 0.72)),
-      distanceKm: 7.2,
-      source: 'OPEN_METEO_CAMS',
-      updatedAtISO: now.toISOString(),
-    },
+  const fallbackRadial = [
+    { dLat: +0.12, dLon: +0.02, name: `${locationName} North Sector Hub`, factor: 0.86 },
+    { dLat: +0.09, dLon: +0.15, name: `${locationName} Northeast Eco Corridor`, factor: 0.70 },
+    { dLat: -0.01, dLon: +0.19, name: `${locationName} East Industrial Belt`, factor: 1.28 },
+    { dLat: -0.13, dLon: +0.12, name: `${locationName} Southeast Suburb Station`, factor: 0.94 },
+    { dLat: -0.17, dLon: -0.03, name: `${locationName} South Forest Sanctuary`, factor: 0.65 },
+    { dLat: -0.10, dLon: -0.17, name: `${locationName} Southwest Transit Terminal`, factor: 1.20 },
+    { dLat: +0.02, dLon: -0.20, name: `${locationName} West Commercial Center`, factor: 1.05 },
+    { dLat: +0.14, dLon: -0.13, name: `${locationName} Northwest Ridge Park`, factor: 0.74 },
   ];
+
+  const stationsNearby: StationPin[] = fallbackRadial.map((slot, idx) => {
+    const stLat = Number((lat + slot.dLat).toFixed(4));
+    const stLon = Number((lon + slot.dLon).toFixed(4));
+    const dist = haversineDistanceKm(lat, lon, stLat, stLon);
+    return {
+      uid: `st-fallback-${idx}-${stLat}-${stLon}`,
+      name: slot.name,
+      latitude: stLat,
+      longitude: stLon,
+      aqi: Math.max(25, Math.round(dualIndices.cpcb.aqi * slot.factor)),
+      distanceKm: dist,
+      source: 'OPEN_METEO_CAMS',
+      updatedAtISO: now.toISOString(),
+    };
+  });
 
   return {
     current: currentEnvelope,
@@ -790,18 +784,24 @@ export async function fetchNearbyStations(
     }
   }
 
-  // Fallback: Generate real Open-Meteo multi-point sampling grid within the bounding box
+  // Fallback: Generate real Open-Meteo multi-point sampling grid distributed radially across 8 sectors
   // This guarantees an interactive map with authentic data even with zero tokens!
-  const gridLats = [
-    Number((bounds.minLat + 0.1).toFixed(3)),
-    Number(((bounds.minLat + bounds.maxLat) / 2).toFixed(3)),
-    Number((bounds.maxLat - 0.1).toFixed(3)),
+  const centerLat = userLat ?? (bounds.minLat + bounds.maxLat) / 2;
+  const centerLon = userLon ?? (bounds.minLon + bounds.maxLon) / 2;
+
+  const radialOffsets = [
+    { dLat: +0.12, dLon: +0.02, name: 'North Sector Hub' },
+    { dLat: +0.09, dLon: +0.15, name: 'Northeast Eco Corridor' },
+    { dLat: -0.01, dLon: +0.19, name: 'East Industrial Belt' },
+    { dLat: -0.13, dLon: +0.12, name: 'Southeast Suburb Station' },
+    { dLat: -0.17, dLon: -0.03, name: 'South Forest Sanctuary' },
+    { dLat: -0.10, dLon: -0.17, name: 'Southwest Transit Terminal' },
+    { dLat: +0.02, dLon: -0.20, name: 'West Commercial Center' },
+    { dLat: +0.14, dLon: -0.13, name: 'Northwest Ridge Park' },
   ];
-  const gridLons = [
-    Number((bounds.minLon + 0.1).toFixed(3)),
-    Number(((bounds.minLon + bounds.maxLon) / 2).toFixed(3)),
-    Number((bounds.maxLon - 0.1).toFixed(3)),
-  ];
+
+  const gridLats = radialOffsets.map((r) => Number((centerLat + r.dLat).toFixed(4)));
+  const gridLons = radialOffsets.map((r) => Number((centerLon + r.dLon).toFixed(4)));
 
   const pins: StationPin[] = [];
   const coordsLatStr = gridLats.join(',');
@@ -821,8 +821,8 @@ export async function fetchNearbyStations(
         : undefined;
 
       pins.push({
-        uid: `grid-${idx}-${stLat}-${stLon}`,
-        name: `Atmospheric Sector ${idx + 1}`,
+        uid: `radial-${idx}-${stLat}-${stLon}`,
+        name: radialOffsets[idx]?.name || `Atmospheric Sector ${idx + 1}`,
         latitude: stLat,
         longitude: stLon,
         aqi: loc.current.us_aqi || 50,
@@ -832,7 +832,7 @@ export async function fetchNearbyStations(
       });
     });
   } catch (e) {
-    console.warn('Open-Meteo grid fallback error:', e);
+    console.warn('Open-Meteo radial grid fallback error:', e);
   }
 
   return pins;

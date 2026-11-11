@@ -25,7 +25,7 @@ interface ProvenanceHeaderBarProps {
   onToggleStandard: () => void;
   colorblindMode: boolean;
   onToggleColorblind: () => void;
-  theme: 'espresso' | 'sand';
+  theme: 'espresso' | 'charcoal';
   onToggleTheme: () => void;
   onOpenMobileMenu: () => void;
   onSelectLocation: (lat: number, lon: number, name: string, admin1?: string, countryCode?: string) => void;
@@ -160,22 +160,22 @@ export const ProvenanceHeaderBar: React.FC<ProvenanceHeaderBarProps> = ({
   return (
     <header className="w-full bg-[#141210] border-b border-stone-800/80 sticky top-0 z-30 px-4 sm:px-6 h-16 flex items-center justify-between gap-3 text-stone-200">
       {/* Left: Mobile Menu Toggle & City Search Bar */}
-      <div className="flex items-center gap-3 flex-1 max-w-md">
+      <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-[210px] sm:min-w-[250px] max-w-md">
         <button
           type="button"
           onClick={onOpenMobileMenu}
-          className="md:hidden p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-white"
+          className="md:hidden p-2 rounded-xl bg-stone-900 border border-stone-800 text-stone-300 hover:text-white shrink-0"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         {/* City Autocomplete Search Input */}
-        <div ref={searchRef} className="relative flex-1">
+        <div ref={searchRef} className="relative flex-1 min-w-[150px] sm:min-w-[190px]">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
               type="text"
-              placeholder="Search city, district, or coordinates..."
+              placeholder="Search city..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => searchQuery.length >= 2 && setShowDropdown(true)}
@@ -188,21 +188,21 @@ export const ProvenanceHeaderBar: React.FC<ProvenanceHeaderBarProps> = ({
 
           {/* Search Results Dropdown */}
           {showDropdown && searchResults.length > 0 && (
-            <div className="absolute left-0 right-0 mt-1.5 bg-stone-900 border border-stone-800 rounded-xl shadow-2xl overflow-hidden z-50 divide-y divide-stone-800/80">
+            <div className="absolute left-0 mt-1.5 w-80 sm:w-96 bg-stone-900 border border-stone-800 rounded-xl shadow-2xl overflow-hidden z-50 divide-y divide-stone-800/80">
               {searchResults.map((city) => (
                 <button
                   key={`${city.id}-${city.latitude}`}
                   type="button"
                   onClick={() => handleSelectCity(city)}
-                  className="w-full text-left px-3.5 py-2.5 text-xs hover:bg-stone-800 transition-colors flex items-center justify-between"
+                  className="w-full text-left px-3.5 py-2.5 text-xs hover:bg-stone-800 transition-colors flex items-center justify-between gap-3"
                 >
-                  <div>
+                  <div className="truncate min-w-0">
                     <span className="font-semibold text-stone-100">{city.name}</span>
                     <span className="text-stone-400 text-[11px] ml-1.5">
                       {city.admin1 ? `${city.admin1}, ` : ''}{city.country}
                     </span>
                   </div>
-                  <span className="text-[10px] font-mono text-stone-400">
+                  <span className="text-[10px] font-mono text-stone-400 shrink-0">
                     {city.latitude.toFixed(2)}°, {city.longitude.toFixed(2)}°
                   </span>
                 </button>
@@ -319,17 +319,17 @@ export const ProvenanceHeaderBar: React.FC<ProvenanceHeaderBarProps> = ({
           <Eye className="w-4 h-4 text-amber-400" />
         </button>
 
-        {/* ☀️ Daylight Sand / 🌙 Warm Espresso Theme Toggle */}
+        {/* Dual High-Contrast Dark Themes: Warm Volcanic Espresso vs Deep Midnight Charcoal */}
         <button
           type="button"
           onClick={onToggleTheme}
-          title={theme === 'espresso' ? 'Switch to ☀️ Daylight Sand (Light Mode)' : 'Switch to 🌙 Warm Espresso (Dark Mode)'}
+          title={theme === 'espresso' ? 'Switch to Deep Midnight Charcoal Theme' : 'Switch to Warm Volcanic Espresso Theme'}
           className="p-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-800 text-stone-300 hover:text-amber-300 transition-all"
         >
           {theme === 'espresso' ? (
             <Sun className="w-4 h-4 text-amber-400" />
           ) : (
-            <Moon className="w-4 h-4 text-stone-300" />
+            <Moon className="w-4 h-4 text-amber-400" />
           )}
         </button>
 

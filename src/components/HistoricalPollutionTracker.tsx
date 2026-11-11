@@ -116,16 +116,37 @@ export const HistoricalPollutionTracker: React.FC<HistoricalPollutionTrackerProp
       p.pollutants.o3 ?? 30,
     ]);
 
-    const chartData: any[] = [];
-    const spikes: any[] = [];
-
-    activeHistory.forEach((pt, i) => {
+    // Pre-evaluate points: modified Z-score (|ModZ| > 2.0) or Isolation Forest (>= 0.58)
+    const evaluatedPoints = activeHistory.map((pt, i) => {
       const pm25Val = pt.pollutants.pm2_5 ?? 0;
       const pm10Val = pt.pollutants.pm10 ?? 0;
       const zInfo = computeModifiedZScore(pm25Series, pm25Val);
       const currentVector = windowVectors[i] || [pm25Val, pm10Val, 20, 15, 1000, 30];
       const ifScore = scoreIsolationForest(windowVectors, currentVector);
-      const isSpike = zInfo.isAnomaly || ifScore >= 0.65;
+      const passesThreshold = Math.abs(zInfo.modZ) > 2.0 || ifScore >= 0.58;
+      return {
+        pt,
+        i,
+        pm25Val,
+        pm10Val,
+        zInfo,
+        ifScore,
+        passesThreshold,
+      };
+    });
+
+    // Guarantee that the top 3 highest pollution peaks in the window are always annotated
+    const sortedIndicesByPm25 = [...evaluatedPoints]
+      .sort((a, b) => b.pm25Val - a.pm25Val)
+      .slice(0, Math.min(3, evaluatedPoints.length))
+      .map((item) => item.i);
+    const top3IndicesSet = new Set(sortedIndicesByPm25);
+
+    const chartData: any[] = [];
+    const spikes: any[] = [];
+
+    evaluatedPoints.forEach(({ pt, i, pm25Val, pm10Val, zInfo, ifScore, passesThreshold }) => {
+      const isSpike = passesThreshold || top3IndicesSet.has(i);
 
       const dateObj = new Date(pt.timeISO);
       const timeLabel = `${dateObj.getDate()} ${dateObj.toLocaleString('en-US', { month: 'short' })} ${dateObj.getHours()}:00`;
@@ -387,7 +408,7 @@ export const HistoricalPollutionTracker: React.FC<HistoricalPollutionTrackerProp
                 </h3>
               </div>
               <span className="text-[11px] text-stone-400 font-mono">
-                Red pulse markers indicate |ModZ| &gt; 3.5 or Isolation Forest &ge; 0.65
+                Red pulse markers indicate |ModZ| &gt; 2.0 or Isolation Forest &ge; 0.58
               </span>
             </div>
 

@@ -38,7 +38,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState<NavigationTab>('live');
   const [activeStandard, setActiveStandard] = useState<'CPCB' | 'US_EPA'>('CPCB');
   const [colorblindMode, setColorblindMode] = useState<boolean>(false);
-  const [theme, setTheme] = useState<'espresso' | 'sand'>('espresso');
+  const [theme, setTheme] = useState<'espresso' | 'charcoal'>('espresso');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   // Modals state
@@ -62,9 +62,9 @@ export function App() {
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [isLocating, setIsLocating] = useState<boolean>(false);
 
-  // Toggle theme between 🌙 Warm Espresso and ☀️ Daylight Sand
+  // Toggle theme between ☕ Warm Volcanic Espresso and 🌌 Deep Midnight Charcoal (Dual Dark Palettes)
   const handleToggleTheme = () => {
-    const nextTheme = theme === 'espresso' ? 'sand' : 'espresso';
+    const nextTheme = theme === 'espresso' ? 'charcoal' : 'espresso';
     setTheme(nextTheme);
     document.documentElement.setAttribute('data-theme', nextTheme);
   };
