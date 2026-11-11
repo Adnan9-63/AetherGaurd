@@ -235,8 +235,8 @@ export const PollutionLeaderboard: React.FC<PollutionLeaderboardProps> = ({
                   const sparkVals = city.historical24hSparkline && city.historical24hSparkline.length > 0 ? city.historical24hSparkline : [city.cpcbAqi];
                   const minVal = Math.min(...sparkVals);
                   const maxVal = Math.max(...sparkVals);
-                  const rangeMin = Math.max(0, minVal * 0.8);
-                  const rangeMax = Math.max(rangeMin + 20, maxVal * 1.1);
+                  const rangeMin = Math.max(0, minVal * 0.85);
+                  const rangeMax = Math.max(rangeMin + 20, maxVal * 1.05);
                   const range = Math.max(rangeMax - rangeMin, 1);
 
                   return (
@@ -294,7 +294,7 @@ export const PollutionLeaderboard: React.FC<PollutionLeaderboardProps> = ({
                         <div className="h-6 w-24 flex items-end gap-0.5">
                           {sparkVals.map((val, i) => {
                             const normalized = ((val - rangeMin) / range) * 100;
-                            const hPct = Math.min(100, Math.max(20, Math.round(normalized)));
+                            const hPct = Math.min(100, Math.max(22, Math.round(normalized)));
                             return (
                               <div
                                 key={i}

@@ -42,14 +42,14 @@ export const AIExecutiveInsightBanner: React.FC<AIExecutiveInsightBannerProps> =
   const blh = meteorology.boundaryLayerHeightM ? Math.round(meteorology.boundaryLayerHeightM) : 380;
   const vc = meteorology.ventilationCoefficientM2s ? Math.round(meteorology.ventilationCoefficientM2s) : 420;
 
-  // Atmospheric Boundary Layer & Ventilation Dynamic Narrative
-  const isDispersionFavorable = blh >= 500 || vc >= 1500;
+  // Atmospheric Boundary Layer & Ventilation Dynamic Narrative (PBLH >= 600m is convective)
+  const isDispersionFavorable = blh >= 600 || vc >= 1500;
   const dispersionTextEn = isDispersionFavorable
-    ? `Favorable planetary boundary layer (${blh} m) and active atmospheric ventilation (${vc} m²/s) promote vertical dispersion of pollutants.`
+    ? `Active convective boundary layer (${blh} m, VC ${vc} m²/s) dispersing surface air.`
     : `Shallow planetary boundary layer (${blh} m) and restricted ventilation (${vc} m²/s) are trapping ground aerosols.`;
 
   const dispersionTextHi = isDispersionFavorable
-    ? `अनुकूल वायुमंडलीय परत (${blh} मीटर) और सक्रिय वेंटिलेशन (${vc} m²/s) प्रदूषकों के ऊर्ध्वाधर फैलाव में सहायक हैं।`
+    ? `सक्रिय संवहनीय वायुमंडलीय परत (${blh} मीटर, VC ${vc} m²/s) सतह की हवा के फैलाव में मदद कर रही है।`
     : `निचली वायुमंडलीय परत (${blh} मीटर) और सीमित वेंटिलेशन (${vc} m²/s) के कारण प्रदूषक ज़मीन के पास फंसे हुए हैं।`;
 
   // English Summary

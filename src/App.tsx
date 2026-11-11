@@ -50,6 +50,7 @@ export function App() {
   const [isAlertsModalOpen, setIsAlertsModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [isReportModalOpen, setIsReportModalOpen] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<'UNIFIED' | 'CITIZEN' | 'LAB'>('UNIFIED');
 
   // Active Location State
   const [location, setLocation] = useState({
@@ -160,7 +161,7 @@ export function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-cyan-500/30 selection:text-cyan-200">
+    <div className="min-h-screen bg-[#090C10] text-[#F8FAFC] flex flex-col selection:bg-emerald-500/30 selection:text-emerald-200">
       {/* 1. Immutable Top Provenance Header Bar */}
       {dataset && (
         <ProvenanceHeaderBar
@@ -179,6 +180,8 @@ export function App() {
           isLocating={isLocating}
           isRefreshing={isRefreshing}
           onManualRefresh={() => loadData(location.lat, location.lon, location.name, location.admin1, location.countryCode, true)}
+          viewMode={viewMode}
+          onViewModeChange={setViewMode}
         />
       )}
 
@@ -334,6 +337,7 @@ export function App() {
                 activeStandard={activeStandard}
                 onToggleStandard={() => setActiveStandard(activeStandard === 'CPCB' ? 'US_EPA' : 'CPCB')}
                 colorblindMode={colorblindMode}
+                viewMode={viewMode}
               />
             )}
 

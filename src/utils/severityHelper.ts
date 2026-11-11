@@ -10,6 +10,9 @@ export interface SeverityTierInfo {
   okabeItoColor: string;
   geometricIcon: string;
   geometricName: string;
+  washRgba: string;
+  humanVerdict: string;
+  breathingPeriodSeconds: number;
 }
 
 export const SEVERITY_TIERS: SeverityTierInfo[] = [
@@ -17,61 +20,79 @@ export const SEVERITY_TIERS: SeverityTierInfo[] = [
     tierIndex: 1,
     cpcbCategory: 'Good',
     usEpaCategory: 'Good',
-    cpcbColor: '#00B050',
-    usEpaColor: '#00E400',
+    cpcbColor: '#10B981', // Alpine Spruce
+    usEpaColor: '#10B981',
     okabeItoColor: '#009E73', // Bluish Green
     geometricIcon: '●',
     geometricName: 'Solid Circle',
+    washRgba: 'rgba(16, 185, 129, 0.12)',
+    humanVerdict: 'PRISTINE AIR • SAFE OUTDOORS',
+    breathingPeriodSeconds: 5.0,
   },
   {
     tierIndex: 2,
     cpcbCategory: 'Satisfactory',
     usEpaCategory: 'Moderate',
-    cpcbColor: '#92D050',
-    usEpaColor: '#EAB308', // Amber/Yellow
+    cpcbColor: '#EAB308', // Solar Flax
+    usEpaColor: '#EAB308',
     okabeItoColor: '#56B4E9', // Sky Blue
     geometricIcon: '▲',
     geometricName: 'Upward Triangle',
+    washRgba: 'rgba(234, 179, 8, 0.12)',
+    humanVerdict: 'ACCEPTABLE AIR • MINOR HAZE',
+    breathingPeriodSeconds: 4.2,
   },
   {
     tierIndex: 3,
     cpcbCategory: 'Moderately Polluted',
     usEpaCategory: 'Unhealthy for Sensitive Groups',
-    cpcbColor: '#EAB308',
-    usEpaColor: '#F97316', // Orange
+    cpcbColor: '#F97316', // Amber Ochre
+    usEpaColor: '#F97316',
     okabeItoColor: '#F0E442', // Bright Yellow
     geometricIcon: '◆',
     geometricName: 'Diamond',
+    washRgba: 'rgba(249, 115, 22, 0.13)',
+    humanVerdict: 'MODERATE SMOG • MASK RECOMMENDED',
+    breathingPeriodSeconds: 3.4,
   },
   {
     tierIndex: 4,
     cpcbCategory: 'Poor',
     usEpaCategory: 'Unhealthy',
-    cpcbColor: '#F97316',
-    usEpaColor: '#EF4444', // Red
+    cpcbColor: '#EF4444', // Smog Vermilion
+    usEpaColor: '#EF4444',
     okabeItoColor: '#E69F00', // Deep Orange
     geometricIcon: '■',
     geometricName: 'Solid Square',
+    washRgba: 'rgba(239, 68, 68, 0.14)',
+    humanVerdict: 'UNHEALTHY AIR • RESTRICT RUNNING',
+    breathingPeriodSeconds: 2.7,
   },
   {
     tierIndex: 5,
     cpcbCategory: 'Very Poor',
     usEpaCategory: 'Very Unhealthy',
-    cpcbColor: '#EF4444',
-    usEpaColor: '#8B5CF6', // Purple
+    cpcbColor: '#E11D48', // Pyrotechnic Crimson
+    usEpaColor: '#E11D48',
     okabeItoColor: '#D55E00', // Vermilion
     geometricIcon: '⬟',
     geometricName: 'Pentagon',
+    washRgba: 'rgba(225, 29, 72, 0.16)',
+    humanVerdict: 'VERY POOR • TRAPPED URBAN SMOG',
+    breathingPeriodSeconds: 2.2,
   },
   {
     tierIndex: 6,
     cpcbCategory: 'Severe',
     usEpaCategory: 'Hazardous',
-    cpcbColor: '#7E0023',
-    usEpaColor: '#7E0023', // Maroon
+    cpcbColor: '#9F1239', // Volcanic Burgundy
+    usEpaColor: '#9F1239',
     okabeItoColor: '#CC79A7', // Reddish Purple
-    geometricIcon: '✖',
-    geometricName: 'Octagon Cross',
+    geometricIcon: '⯃',
+    geometricName: 'Octagon',
+    washRgba: 'rgba(159, 18, 57, 0.20)',
+    humanVerdict: 'HAZARDOUS SMOG • SEAL WINDOWS',
+    breathingPeriodSeconds: 1.8,
   },
 ];
 
@@ -85,6 +106,9 @@ export function getSeverityInfo(
   icon: string;
   tierIndex: number;
   bgGlow: string;
+  washRgba: string;
+  humanVerdict: string;
+  breathingPeriodSeconds: number;
 } {
   let tier: SeverityTierInfo;
 
@@ -117,6 +141,9 @@ export function getSeverityInfo(
     icon: tier.geometricIcon,
     tierIndex: tier.tierIndex,
     bgGlow: `${colorHex}33`, // 20% alpha glow
+    washRgba: tier.washRgba,
+    humanVerdict: tier.humanVerdict,
+    breathingPeriodSeconds: tier.breathingPeriodSeconds,
   };
 }
 

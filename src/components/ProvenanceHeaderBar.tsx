@@ -9,13 +9,18 @@ import {
   Eye,
   FileSpreadsheet,
   Flame,
+  FlaskConical,
   Globe2,
+  Headphones,
   MapPin,
   Navigation,
   RefreshCw,
   Search,
   Share2,
+  Sparkles,
   Trophy,
+  UserCheck,
+  VolumeX,
 } from 'lucide-react';
 import type { GeocodingResult, UnifiedAirQualityEnvelope } from '../types/telemetry.ts';
 import { searchCities } from '../services/apiOrchestrator.ts';
@@ -36,6 +41,8 @@ interface ProvenanceHeaderBarProps {
   isLocating: boolean;
   isRefreshing: boolean;
   onManualRefresh: () => void;
+  viewMode?: 'UNIFIED' | 'CITIZEN' | 'LAB';
+  onViewModeChange?: (mode: 'UNIFIED' | 'CITIZEN' | 'LAB') => void;
 }
 
 const PRESET_CITIES = [
@@ -67,12 +74,60 @@ export const ProvenanceHeaderBar: React.FC<ProvenanceHeaderBarProps> = ({
   isLocating,
   isRefreshing,
   onManualRefresh,
+  viewMode = 'UNIFIED',
+  onViewModeChange,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<GeocodingResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isSpeakingBrief, setIsSpeakingBrief] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+
+  // 30s Morning Air Radio Briefing via SpeechSynthesis
+  const handleToggleAudioBrief = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) {
+      alert('Speech synthesis is not supported on this browser.');
+      return;
+    }
+
+    if (isSpeakingBrief) {
+      window.speechSynthesis.cancel();
+      setIsSpeakingBrief(false);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const aqi = activeStandard === 'CPCB' ? currentData.indices.cpcb.aqi : currentData.indices.usEpa.aqi;
+    const cat = activeStandard === 'CPCB' ? currentData.indices.cpcb.category : currentData.indices.usEpa.category;
+    const prominent = currentData.indices.cpcb.prominentPollutant.toUpperCase();
+    const pblh = Math.round(currentData.meteorology.boundaryLayerHeightM || 450);
+
+    const script = `Here is your AetherGuard atmospheric briefing for ${currentData.location.name}. Current air quality is ${cat} with a CPCB AQI of ${aqi}, driven primarily by ${prominent}. Planetary boundary layer height is at ${pblh} meters. Keep windows sealed during morning and evening inversions, and check your personalized safe exercise window before planning outdoor cardio.`;
+
+    const utterance = new SpeechSynthesisUtterance(script);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find((v) => v.lang.includes('en-IN')) || voices.find((v) => v.lang.startsWith('en')) || null;
+    if (voice) utterance.voice = voice;
+
+    utterance.onstart = () => setIsSpeakingBrief(true);
+    utterance.onend = () => setIsSpeakingBrief(false);
+    utterance.onerror = () => setIsSpeakingBrief(false);
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   // Debounced geocoding search
   useEffect(() => {
@@ -182,8 +237,32 @@ export const ProvenanceHeaderBar: React.FC<ProvenanceHeaderBarProps> = ({
             )}
           </div>
 
-          {/* Action Buttons: Judge Tour, Alerts, Share, Report, Standard, Colorblind, Inspector */}
+          {/* Action Buttons: Audio Brief, Judge Tour, Alerts, Share, Report, Standard, Colorblind, Inspector */}
           <div className="flex items-center gap-1.5 flex-wrap">
+            {/* 30s Morning Air Radio Brief Button */}
+            <button
+              type="button"
+              onClick={handleToggleAudioBrief}
+              title="Play 30-Second Human Atmospheric Radio Brief"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all shadow-sm ${
+                isSpeakingBrief
+                  ? 'bg-rose-950 text-rose-300 border-rose-600 animate-pulse'
+                  : 'bg-emerald-950/80 hover:bg-emerald-900/80 text-emerald-300 border-emerald-700/80'
+              }`}
+            >
+              {isSpeakingBrief ? (
+                <>
+                  <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                  <span>Stop Brief</span>
+                </>
+              ) : (
+                <>
+                  <Headphones className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>30s Air Brief</span>
+                </>
+              )}
+            </button>
+
             {/* Judge's 19-Feature Verification Tour Button */}
             <button
               type="button"
@@ -324,6 +403,48 @@ export const ProvenanceHeaderBar: React.FC<ProvenanceHeaderBarProps> = ({
                 <span className="text-amber-400">({timestamp.stalenessMinutes}m stale)</span>
               )}
             </div>
+
+            {/* View Mode Density Switcher */}
+            {onViewModeChange && (
+              <div className="flex items-center gap-1 bg-slate-950/80 p-0.5 rounded-xl border border-white/[0.08] text-[11px]">
+                <button
+                  type="button"
+                  onClick={() => onViewModeChange('UNIFIED')}
+                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-lg font-medium transition-all ${
+                    viewMode === 'UNIFIED'
+                      ? 'bg-slate-800 text-white border border-white/20 shadow-sm font-semibold'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <Sparkles className="w-3 h-3 text-cyan-400" />
+                  <span>Unified</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onViewModeChange('CITIZEN')}
+                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-lg font-medium transition-all ${
+                    viewMode === 'CITIZEN'
+                      ? 'bg-emerald-950 text-emerald-300 border border-emerald-700 shadow-sm font-semibold'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <UserCheck className="w-3 h-3 text-emerald-400" />
+                  <span>Citizen</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => onViewModeChange('LAB')}
+                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-lg font-medium transition-all ${
+                    viewMode === 'LAB'
+                      ? 'bg-indigo-950 text-indigo-300 border border-indigo-700 shadow-sm font-semibold'
+                      : 'text-slate-400 hover:text-slate-200'
+                  }`}
+                >
+                  <FlaskConical className="w-3 h-3 text-indigo-400" />
+                  <span>Forensics</span>
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 1-Click Preset City Pills */}

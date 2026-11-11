@@ -50,15 +50,15 @@ export function classifyPollutionSource(
 
   // Heuristic logit scores grounded in Indian source-apportionment literature
   // 1. Pyrotechnic Firecrackers: Acute nocturnal SO2 surge + high PM2.5 fraction
-  // Stricter check: enforce SO2 > 20 µg/m³ AND (evening/night timing OR extreme statistical surge Z > 2.5) to eliminate daytime false positives
-  const isPyroPlausible = so2 > 20 && (isEveningNight || so2ModZ > 2.5);
+  // Stricter check: enforce SO2 > 22 µg/m³ AND (evening/night timing OR extreme statistical surge Z > 2.5) to eliminate daytime false positives
+  const isPyroPlausible = so2 > 22 && (isEveningNight || so2ModZ > 2.5);
   const scorePyro = isPyroPlausible
     ? (pmRatio > 0.62 ? 2.5 * pmRatio : 0.5 * pmRatio) +
       (so2 > 25 ? 1.8 : 0.2) +
       (so2No2Ratio > 0.45 ? 2.2 * so2No2Ratio : 0.3) +
       (so2ModZ > 3.0 ? 2.5 : Math.max(0, 0.4 * so2ModZ)) +
       (isEveningNight ? 1.2 : -0.5)
-    : -2.5;
+    : -4.0;
 
   // 2. Agricultural Stubble Burning: High PM2.5/PM10, high CO from smoldering, but normal SO2
   const scoreBiomass =

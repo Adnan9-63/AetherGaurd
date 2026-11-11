@@ -683,10 +683,10 @@ export async function fetchBatchCitiesTelemetry(
 
       // Hourly sparkline from past 24 hours
       const hourlyPm25: number[] = locAq.hourly?.pm2_5 || [];
-      const sparkline = hourlyPm25.slice(-24);
+      const sparkline = hourlyPm25.length >= 48 ? hourlyPm25.slice(0, 24) : hourlyPm25.slice(-24);
 
       // 24h forecast mean
-      const forecastPm25 = hourlyPm25.slice(-48, -24);
+      const forecastPm25 = hourlyPm25.length >= 48 ? hourlyPm25.slice(24, 48) : hourlyPm25.slice(-24);
       const forecastMean = forecastPm25.length > 0
         ? Math.round(forecastPm25.reduce((a, b) => a + b, 0) / forecastPm25.length)
         : dualIndices.cpcb.aqi;
