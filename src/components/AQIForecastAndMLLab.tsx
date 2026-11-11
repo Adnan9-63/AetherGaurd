@@ -1,6 +1,7 @@
 // src/components/AQIForecastAndMLLab.tsx
 // Mandatory Feature F: 5-Day Hourly AQI Forecast Timeline & Upcoming Spike Alerter
 // Bonus #3: Explainable ML-Based Prediction Engine & Feature Attribution Waterfall
+// Warm Earthy Obsidian & Diwali Marigold Palette with Zero Blue/Slate Clutter
 
 import React, { useMemo } from 'react';
 import {
@@ -50,7 +51,7 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
     const past24 = historicalPoints.slice(-24);
     const future120 = forecastPoints.slice(0, 120);
 
-    // Detect Upcoming Spikes (> +50 within 6h or crossing severe bracket)
+    // Detect Upcoming Spikes (> +40 within 6h or crossing severe bracket)
     const detectedSpikes: {
       timeISO: string;
       timeLabel: string;
@@ -132,7 +133,7 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
   return (
     <div className="space-y-6">
       {/* Header Bar with Mandatory Warning Badge */}
-      <div className="p-4 rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-amber-900/40 shadow-xl flex flex-wrap items-center justify-between gap-4">
+      <div className="p-4 rounded-2xl bg-stone-900/90 backdrop-blur-xl border border-amber-900/40 shadow-xl flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
             <Cpu className="w-5 h-5" />
@@ -156,9 +157,9 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
           </div>
         </div>
 
-        <div className="text-right text-xs text-slate-400">
+        <div className="text-right text-xs text-stone-400">
           <span>Horizon: 120 Hours (5 Days)</span>
-          <span className="block text-[11px] font-mono text-cyan-300">
+          <span className="block text-[11px] font-mono text-amber-400">
             ECMWF IFS & CAMS Global Atmospheric Composition
           </span>
         </div>
@@ -166,15 +167,15 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
 
       {/* Upcoming Spike Alert Banner */}
       {upcomingSpikes.length > 0 && (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-rose-950/80 via-slate-900 to-amber-950/70 border border-rose-800/80 shadow-lg space-y-2">
+        <div className="p-4 rounded-xl bg-gradient-to-r from-rose-950/80 via-stone-900 to-amber-950/70 border border-rose-800/80 shadow-lg space-y-2">
           <div className="flex items-center gap-2 text-rose-300 font-bold text-sm">
             <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
             <span>Upcoming Severe Pollution Surge Warning</span>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
             {upcomingSpikes.map((spk, idx) => (
-              <div key={idx} className="p-2.5 rounded-lg bg-slate-950/60 border border-slate-800 text-xs">
-                <span className="text-slate-400 text-[11px] block">{spk.timeLabel} IST</span>
+              <div key={idx} className="p-2.5 rounded-lg bg-stone-950/80 border border-stone-800 text-xs">
+                <span className="text-stone-400 text-[11px] block">{spk.timeLabel} IST</span>
                 <span className="text-rose-400 font-bold font-mono text-base">
                   {spk.predictedAqi} AQI ({spk.severityCategory})
                 </span>
@@ -188,22 +189,22 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
       )}
 
       {/* Synchronized 120-Hour Timeline Chart: Solid Live vs Dashed Forecast */}
-      <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl space-y-3">
+      <div className="p-5 rounded-2xl bg-stone-900/90 border border-stone-800 shadow-xl space-y-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <LineChartIcon className="w-4 h-4 text-cyan-400" />
+            <LineChartIcon className="w-4 h-4 text-amber-400" />
             <h3 className="text-sm font-bold text-white">
               Multi-Day Continuous Progression: 24h Live History vs 120h Future Forecast
             </h3>
           </div>
-          <div className="flex items-center gap-3 text-xs text-slate-400">
+          <div className="flex items-center gap-3 text-xs text-stone-400">
             <div className="flex items-center gap-1.5">
-              <span className="w-3 h-0.5 bg-blue-500 inline-block" />
+              <span className="w-3 h-0.5 bg-emerald-500 inline-block" />
               <span>Solid: Live Measurements</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="w-3 h-0.5 border-t border-dashed border-amber-400 inline-block" />
-              <span>Dashed: Forecast / ML Zone</span>
+              <span>Dashed: Forecast Zone</span>
             </div>
           </div>
         </div>
@@ -211,12 +212,12 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
         <div className="h-80 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <ComposedChart data={timelineData} margin={{ top: 28, right: 20, left: 10, bottom: 10 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-              <XAxis dataKey="timeLabel" stroke="#64748b" tick={{ fontSize: 10 }} />
-              <YAxis stroke="#64748b" domain={[0, 500]} tick={{ fontSize: 10 }} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#292524" />
+              <XAxis dataKey="timeLabel" stroke="#78716c" tick={{ fontSize: 10 }} />
+              <YAxis stroke="#78716c" domain={[0, 500]} tick={{ fontSize: 10 }} />
               <Tooltip
-                contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', fontSize: '11px' }}
-                labelStyle={{ color: '#94a3b8' }}
+                contentStyle={{ backgroundColor: '#1c1917', borderColor: '#44403c', borderRadius: '12px', fontSize: '11px', color: '#fafaf9' }}
+                labelStyle={{ color: '#d6d3d1' }}
                 formatter={(val: any, name: any) => {
                   if (name === 'Projected AQI (Forecast)') return [`Projected (CAMS / ML): ${val} AQI`, name];
                   return [`Measured: ${val} AQI`, name];
@@ -225,7 +226,7 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
               <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '8px' }} />
 
               {/* Vertical NOW Reference Line */}
-              <ReferenceLine x="NOW" stroke="#06b6d4" strokeWidth={2} label={{ value: 'CURRENT TIME (NOW)', fill: '#06b6d4', fontSize: 10, position: 'top' }} />
+              <ReferenceLine x="NOW" stroke="#f59e0b" strokeWidth={2} label={{ value: 'CURRENT TIME (NOW)', fill: '#f59e0b', fontSize: 10, position: 'top' }} />
 
               {/* Severity Thresholds */}
               <ReferenceLine y={200} stroke="#eab308" strokeDasharray="3 3" opacity={0.5} />
@@ -237,7 +238,7 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
                 type="monotone"
                 dataKey="actualMeasuredAqi"
                 name="Actual Live Measurements"
-                stroke="#3b82f6"
+                stroke="#10b981"
                 strokeWidth={2.5}
                 dot={false}
                 connectNulls={false}
@@ -260,46 +261,46 @@ export const AQIForecastAndMLLab: React.FC<AQIForecastAndMLLabProps> = ({
       </div>
 
       {/* Bonus #3: Explainable ML Feature Attribution Waterfall Card */}
-      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 shadow-xl space-y-4">
+      <div className="p-6 rounded-2xl bg-stone-900/90 border border-stone-800 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Bot className="w-5 h-5 text-indigo-400" />
+            <Bot className="w-5 h-5 text-amber-400" />
             <div>
               <h3 className="text-sm font-bold text-white">
                 Explainable ML Attribution Waterfall (Bonus #3)
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-stone-400">
                 Additive SHAP-style breakdown: why tomorrow's AQI will rise or fall
               </p>
             </div>
           </div>
-          <span className="text-xs font-mono font-semibold text-indigo-300">
+          <span className="text-xs font-mono font-semibold text-amber-300">
             Baseline: {mlResult.baseline72hMeanAqi} AQI
           </span>
         </div>
 
         {/* Narrative Banner */}
-        <div className="p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-900/60 text-xs text-indigo-200 leading-relaxed font-sans">
+        <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-900/60 text-xs text-amber-200 leading-relaxed font-sans">
           <strong>Physics Driver Synthesis: </strong> {mlResult.executiveNarrative}
         </div>
 
         {/* Waterfall Attribute Bars */}
         <div className="space-y-3 pt-2">
           {mlResult.overallTopAttributions.map((attr) => (
-            <div key={attr.featureKey} className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 space-y-1.5 text-xs">
+            <div key={attr.featureKey} className="p-3 rounded-xl bg-stone-850 border border-stone-800 space-y-1.5 text-xs">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${attr.isAdverse ? 'bg-rose-500' : 'bg-emerald-400'}`} />
-                  <span className="font-semibold text-slate-200">{attr.featureName}</span>
+                  <span className="font-semibold text-stone-200">{attr.featureName}</span>
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-slate-400 font-mono">Raw: {attr.rawValue} {attr.unit}</span>
-                  <span className={`font-mono font-bold text-sm ${attr.isAdverse ? 'text-rose-400' : 'text-emerald-400'}`}>
+                  <span className="text-stone-400 font-mono">Raw: {attr.rawValue} {attr.unit}</span>
+                  <span className={`font-mono font-bold text-sm ${attr.attributionAqiDelta >= 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
                     {attr.attributionAqiDelta >= 0 ? `+${attr.attributionAqiDelta}` : attr.attributionAqiDelta} AQI
                   </span>
                 </div>
               </div>
-              <p className="text-[11px] text-slate-400 font-sans">
+              <p className="text-[11px] text-stone-400 font-sans">
                 {attr.explanation}
               </p>
             </div>

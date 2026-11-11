@@ -114,9 +114,36 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
+    // Use inline raster style specification to guarantee 100% reliable rendering without external style JSON failures
+    const rasterStyle: maplibregl.StyleSpecification = {
+      version: 8,
+      sources: {
+        'carto-dark': {
+          type: 'raster',
+          tiles: [
+            'https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            'https://c.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+            'https://d.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+          ],
+          tileSize: 256,
+          attribution: '&copy; CartoDB &copy; OpenStreetMap',
+        },
+      },
+      layers: [
+        {
+          id: 'carto-dark-tiles',
+          type: 'raster',
+          source: 'carto-dark',
+          minzoom: 0,
+          maxzoom: 19,
+        },
+      ],
+    };
+
     const map = new maplibregl.Map({
       container: mapContainerRef.current,
-      style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+      style: rasterStyle,
       center: [centerLon, centerLat],
       zoom: 9.5,
       pitch: 25,
@@ -127,6 +154,14 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
     mapRef.current = map;
 
     map.on('load', () => {
+      setTimeout(() => {
+        try {
+          map.resize();
+        } catch {
+          // ignore
+        }
+      }, 120);
+
       // Add GeoJSON Source for Heatmap & Stations
       const geojsonFeatures = stations.map((st) => ({
         type: 'Feature' as const,
@@ -160,12 +195,12 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
             'interpolate',
             ['linear'],
             ['heatmap-density'],
-            0, 'rgba(0, 176, 80, 0)',
-            0.2, '#00b050',
-            0.4, '#92d050',
-            0.6, '#ffff00',
-            0.8, '#ff9900',
-            1.0, '#7e0023',
+            0, 'rgba(16, 185, 129, 0)',
+            0.2, '#10b981',
+            0.4, '#eab308',
+            0.6, '#f97316',
+            0.8, '#ef4444',
+            1.0, '#7f1d1d',
           ],
           'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 4, 18, 11, 65],
           'heatmap-opacity': 0.70,
@@ -181,13 +216,13 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
         },
       });
 
-      // Glowing Cyan Vector Lines Layer
+      // Amber Vector Lines Layer
       map.addLayer({
         id: 'clean-air-vectors-layer',
         type: 'line',
         source: 'clean-air-vectors',
         paint: {
-          'line-color': '#06b6d4',
+          'line-color': '#f59e0b',
           'line-width': 3,
           'line-dasharray': [2, 2],
           'line-opacity': 0.9,
@@ -195,7 +230,17 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
       });
     });
 
+    const onResize = () => {
+      try {
+        map.resize();
+      } catch {
+        // ignore
+      }
+    };
+    window.addEventListener('resize', onResize);
+
     return () => {
+      window.removeEventListener('resize', onResize);
       map.remove();
       mapRef.current = null;
     };
@@ -348,9 +393,16 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
   };
 
   return (
-    <div className="relative w-full h-[580px] rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl">
+    <div
+      className="relative w-full h-[560px] min-h-[560px] rounded-2xl overflow-hidden border border-stone-800 bg-[#100E0D] shadow-2xl"
+      style={{ height: '560px', width: '100%', minHeight: '560px' }}
+    >
       {/* MapLibre WebGL Canvas Container */}
-      <div ref={mapContainerRef} className="w-full h-full" />
+      <div
+        ref={mapContainerRef}
+        className="w-full h-full"
+        style={{ height: '560px', width: '100%' }}
+      />
 
       {/* Top HUD Controls Overlay */}
       <div className="absolute top-4 left-4 z-20 flex flex-wrap items-center gap-2">
@@ -361,7 +413,7 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md border shadow-lg transition-all ${
             heatmapEnabled
               ? 'bg-rose-950/80 text-rose-200 border-rose-700/80'
-              : 'bg-slate-900/80 text-slate-300 border-slate-700'
+              : 'bg-stone-900/85 text-stone-300 border-stone-700'
           }`}
         >
           <Flame className="w-4 h-4 text-rose-400" />
@@ -374,13 +426,13 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
           onClick={() => setCleanAirFinderActive(!cleanAirFinderActive)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold backdrop-blur-md border shadow-lg transition-all ${
             cleanAirFinderActive
-              ? 'bg-cyan-950/90 text-cyan-200 border-cyan-500 shadow-cyan-500/20'
-              : 'bg-slate-900/80 text-slate-300 border-slate-700'
+              ? 'bg-amber-950/90 text-amber-200 border-amber-500 shadow-amber-500/20'
+              : 'bg-stone-900/85 text-stone-300 border-stone-700'
           }`}
         >
-          <Compass className="w-4 h-4 text-cyan-400" />
+          <Compass className="w-4 h-4 text-amber-400" />
           <span>Clean Air Finder</span>
-          <span className="text-[10px] px-1.5 py-0.2 rounded bg-cyan-900/80 text-cyan-300 font-mono">
+          <span className="text-[10px] px-1.5 py-0.2 rounded bg-amber-900/80 text-amber-300 font-mono">
             Bonus #6
           </span>
         </button>
@@ -400,18 +452,18 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
 
       {/* Clean Air Finder Overlay Panel (Bonus #6) */}
       {cleanAirFinderActive && (
-        <div className="absolute bottom-4 left-4 z-20 w-80 p-4 rounded-xl bg-slate-900/90 backdrop-blur-xl border border-cyan-500/40 shadow-2xl text-slate-100 space-y-3">
+        <div className="absolute bottom-4 left-4 z-20 w-80 p-4 rounded-xl bg-stone-900/95 backdrop-blur-xl border border-amber-600/40 shadow-2xl text-stone-100 space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
-              <Compass className="w-4 h-4 text-cyan-400" />
+              <Compass className="w-4 h-4 text-amber-400" />
               <span className="font-bold text-xs text-white">Clean Air Finder Refuges</span>
             </div>
-            <span className="text-[10px] text-cyan-300 font-mono">Top 3 Vectors</span>
+            <span className="text-[10px] text-amber-300 font-mono">Top 3 Vectors</span>
           </div>
 
           {/* Radius Selector */}
           <div className="flex items-center gap-1 text-[11px]">
-            <span className="text-slate-400 mr-1">Radius:</span>
+            <span className="text-stone-400 mr-1">Radius:</span>
             {[10, 25, 50, 100].map((r) => (
               <button
                 key={r}
@@ -419,8 +471,8 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
                 onClick={() => setSearchRadiusKm(r)}
                 className={`px-2 py-0.5 rounded text-[10px] font-semibold border ${
                   searchRadiusKm === r
-                    ? 'bg-cyan-950 text-cyan-300 border-cyan-600'
-                    : 'bg-slate-800 text-slate-400 border-slate-700 hover:text-slate-200'
+                    ? 'bg-amber-950 text-amber-300 border-amber-600'
+                    : 'bg-stone-800 text-stone-400 border-stone-700 hover:text-stone-200'
                 }`}
               >
                 {r}km
@@ -431,7 +483,7 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
           {/* Refuges List */}
           <div className="space-y-2">
             {cleanAirRefuges.length === 0 ? (
-              <p className="text-xs text-slate-400 italic py-2">
+              <p className="text-xs text-stone-400 italic py-2">
                 No active monitors with lower AQI found within {searchRadiusKm} km radius.
               </p>
             ) : (
@@ -439,13 +491,13 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
                 <div
                   key={refuge.station.uid}
                   onClick={() => setSelectedStation(refuge.station)}
-                  className="cursor-pointer p-2.5 rounded-lg bg-slate-800/70 hover:bg-slate-800 border border-slate-700/60 transition-all flex items-center justify-between text-xs"
+                  className="cursor-pointer p-2.5 rounded-lg bg-stone-800/80 hover:bg-stone-800 border border-stone-750 transition-all flex items-center justify-between text-xs"
                 >
                   <div>
-                    <div className="font-semibold text-slate-100 line-clamp-1">
+                    <div className="font-semibold text-stone-100 line-clamp-1">
                       #{i + 1} {refuge.station.name}
                     </div>
-                    <div className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
+                    <div className="text-[11px] text-stone-400 flex items-center gap-1 mt-0.5">
                       <span>{refuge.distanceKm} km {refuge.compass8}</span>
                       <span>({refuge.bearingDeg}°)</span>
                     </div>
@@ -467,7 +519,7 @@ export const InteractiveAirQualityMap: React.FC<InteractiveAirQualityMapProps> =
       )}
 
       {/* Map Legend (Bottom Right) */}
-      <div className="absolute bottom-4 right-4 z-20 px-3 py-2 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800 shadow-xl text-[11px] text-slate-300 flex items-center gap-3">
+      <div className="absolute bottom-4 right-4 z-20 px-3 py-2 rounded-xl bg-stone-900/90 backdrop-blur-md border border-stone-800 shadow-xl text-[11px] text-stone-300 flex items-center gap-3">
         <div className="flex items-center gap-1">
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
           <span>Good</span>

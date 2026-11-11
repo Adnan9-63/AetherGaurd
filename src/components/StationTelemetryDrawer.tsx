@@ -26,9 +26,9 @@ export const StationTelemetryDrawer: React.FC<StationTelemetryDrawerProps> = ({
   const severity = getSeverityInfo(station.aqi, activeStandard, colorblindMode);
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-slate-900/95 backdrop-blur-2xl border-l border-slate-800 shadow-2xl flex flex-col justify-between text-slate-100 transition-transform duration-300">
+    <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-stone-900/95 backdrop-blur-2xl border-l border-stone-800 shadow-2xl flex flex-col justify-between text-stone-100 transition-transform duration-300">
       {/* Header */}
-      <div className="p-5 border-b border-slate-800 flex items-start justify-between">
+      <div className="p-5 border-b border-stone-800 flex items-start justify-between">
         <div>
           <div className="flex items-center gap-2">
             <span
@@ -41,20 +41,20 @@ export const StationTelemetryDrawer: React.FC<StationTelemetryDrawerProps> = ({
               {station.name}
             </h3>
           </div>
-          <p className="text-xs text-slate-400 mt-1 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+          <p className="text-xs text-stone-400 mt-1 flex items-center gap-1.5">
+            <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
             <span>
               {station.latitude.toFixed(4)}°N, {station.longitude.toFixed(4)}°E
             </span>
             {station.distanceKm !== undefined && (
-              <span className="text-cyan-300 font-medium">({station.distanceKm} km from center)</span>
+              <span className="text-amber-300 font-medium">({station.distanceKm} km from center)</span>
             )}
           </p>
         </div>
 
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors"
+          className="p-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-white transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
@@ -63,9 +63,9 @@ export const StationTelemetryDrawer: React.FC<StationTelemetryDrawerProps> = ({
       {/* Body Telemetry */}
       <div className="p-5 space-y-5 flex-1 overflow-y-auto">
         {/* Hero AQI Card */}
-        <div className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-stone-800/60 border border-stone-700/60 flex items-center justify-between">
           <div>
-            <span className="text-xs text-slate-400 uppercase tracking-wider block">
+            <span className="text-xs text-stone-400 uppercase tracking-wider block">
               Reported Station AQI
             </span>
             <div className="flex items-baseline gap-2 mt-1">
@@ -96,40 +96,39 @@ export const StationTelemetryDrawer: React.FC<StationTelemetryDrawerProps> = ({
 
         {/* Source Attribution */}
         <div className="space-y-2 text-xs">
-          <span className="font-semibold text-slate-400 uppercase tracking-wider">
+          <span className="font-semibold text-stone-400 uppercase tracking-wider">
             Station Attribution & Source
           </span>
-          <div className="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50 space-y-1.5">
+          <div className="p-3 rounded-xl bg-stone-800/40 border border-stone-700/50 space-y-1.5">
             <div className="flex justify-between">
-              <span className="text-slate-400">Network Provider:</span>
-              <span className="font-medium text-slate-200">
+              <span className="text-stone-400">Network Provider:</span>
+              <span className="font-medium text-stone-200">
                 {station.source === 'WAQI_GROUND_STATION'
                   ? 'CPCB / State Pollution Control Board'
                   : 'Open-Meteo High-Resolution CAMS Grid'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Monitor Type:</span>
-              <span className="font-medium text-slate-200">
+              <span className="text-stone-400">Monitor Type:</span>
+              <span className="font-medium text-stone-200">
                 {station.source === 'WAQI_GROUND_STATION' ? 'Regulatory Reference Ground Station' : '11-km Atmospheric Grid Node'}
               </span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-400">Station UID:</span>
-              <span className="font-mono text-cyan-300">{station.uid}</span>
+              <span className="text-stone-400">Station UID:</span>
+              <span className="font-mono text-amber-300">{station.uid}</span>
             </div>
           </div>
         </div>
 
         {/* Simulated Station Sparkline */}
         <div className="space-y-2">
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+          <span className="text-xs font-semibold text-stone-400 uppercase tracking-wider flex items-center justify-between">
             <span>24-Hour Telemetry Sparkline</span>
-            <span className="text-[10px] text-slate-400">Hourly Variation</span>
+            <span className="text-[10px] text-stone-400">Hourly Variation</span>
           </span>
-          <div className="h-16 w-full p-2 rounded-xl bg-slate-950/60 border border-slate-800 flex items-end gap-1.5">
+          <div className="h-16 w-full p-2 rounded-xl bg-stone-950/60 border border-stone-800 flex items-end gap-1.5">
             {Array.from({ length: 24 }).map((_, i) => {
-              // Simulated diurnal swing around station AQI
               const swing = Math.sin((i / 24) * Math.PI * 2) * (station.aqi * 0.18);
               const val = Math.max(20, Math.round(station.aqi + swing));
               const heightPct = Math.min(100, Math.max(15, (val / 500) * 100));
@@ -141,7 +140,7 @@ export const StationTelemetryDrawer: React.FC<StationTelemetryDrawerProps> = ({
                   className="flex-1 rounded-sm transition-all hover:opacity-80 group relative"
                   style={{ height: `${heightPct}%`, backgroundColor: sColor }}
                 >
-                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-800 text-[10px] px-1.5 py-0.5 rounded shadow z-10 font-mono text-white whitespace-nowrap">
+                  <div className="absolute -top-7 left-1/2 -translate-x-1/2 hidden group-hover:block bg-stone-850 text-[10px] px-1.5 py-0.5 rounded shadow z-10 font-mono text-white whitespace-nowrap">
                     {val} AQI
                   </div>
                 </div>
@@ -152,12 +151,12 @@ export const StationTelemetryDrawer: React.FC<StationTelemetryDrawerProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="p-5 border-t border-slate-800 bg-slate-900/90 flex items-center gap-3">
+      <div className="p-5 border-t border-stone-800 bg-stone-900/90 flex items-center gap-3">
         {onNavigateToStation && (
           <button
             type="button"
             onClick={() => onNavigateToStation(station.latitude, station.longitude, station.name)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold bg-cyan-600 hover:bg-cyan-500 text-white transition-all shadow-md"
+            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white transition-all shadow-md"
           >
             <Navigation className="w-4 h-4" />
             <span>Lock Dashboard to This Station</span>

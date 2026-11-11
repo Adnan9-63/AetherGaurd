@@ -61,10 +61,10 @@ export const DualStandardHeroGauge: React.FC<DualStandardHeroGaugeProps> = ({
       {/* Top Bar: Title & Model Mode Switcher */}
       <div className="flex items-center justify-between relative z-10">
         <div>
-          <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase font-mono block">
+          <span className="text-[10px] font-bold tracking-wider text-stone-400 uppercase font-mono block">
             Atmospheric Vitality Instrument
           </span>
-          <span className="text-xs text-slate-200 font-semibold">
+          <span className="text-xs text-stone-200 font-semibold">
             {activeStandard === 'CPCB' ? 'Indian CPCB NAQI Standard' : 'US-EPA NAAQS (May 2024)'}
           </span>
         </div>
@@ -76,8 +76,8 @@ export const DualStandardHeroGauge: React.FC<DualStandardHeroGaugeProps> = ({
           title="Toggle between Strict Ground Station vs Hybrid CAMS Model Enrichment"
           className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium border transition-all ${
             isHybridMode
-              ? 'bg-cyan-950/80 text-cyan-300 border-cyan-700/80 shadow-sm'
-              : 'bg-slate-800/80 text-slate-300 border-slate-700'
+              ? 'bg-amber-950/80 text-amber-300 border-amber-700/80 shadow-sm'
+              : 'bg-stone-850/80 text-stone-300 border-stone-700'
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
@@ -165,19 +165,19 @@ export const DualStandardHeroGauge: React.FC<DualStandardHeroGaugeProps> = ({
       <div className="space-y-2 z-10">
         {/* Primary Driver Pill */}
         <div className="mineral-well p-2.5 rounded-xl flex items-center justify-between text-xs">
-          <span className="text-slate-400 text-[11px]">Primary Driver:</span>
-          <span className="font-bold text-slate-100 font-mono">
+          <span className="text-stone-400 text-[11px]">Primary Driver:</span>
+          <span className="font-bold text-stone-100 font-mono">
             {pollutantLabels[activeData.prominentPollutant] || activeData.prominentPollutant}
           </span>
         </div>
 
         {/* CPCB Minimum Data Rule Validation */}
         {activeStandard === 'CPCB' && (
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
+          <div className="flex items-center justify-center gap-1.5 text-[11px] text-stone-400">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
             <span>
               CPCB Data Rule:{' '}
-              <strong className="text-slate-200">
+              <strong className="text-stone-200">
                 {indices.cpcb.meetsMinimumDataRule
                   ? 'Valid (>=3 pollutants with particulate)'
                   : 'Screening (partial sensor array)'}
@@ -189,20 +189,20 @@ export const DualStandardHeroGauge: React.FC<DualStandardHeroGaugeProps> = ({
         {/* 1-Click Alternative Standard Switcher */}
         <div
           onClick={onToggleStandard}
-          className="cursor-pointer p-3 rounded-xl bg-slate-800/40 hover:bg-slate-800/80 border border-white/[0.08] transition-all flex items-center justify-between group"
+          className="cursor-pointer p-3 rounded-xl bg-stone-850/60 hover:bg-stone-800 border border-stone-800 transition-all flex items-center justify-between group"
         >
           <div className="flex items-center gap-2">
-            <Award className="w-4 h-4 text-cyan-400 shrink-0" />
+            <Award className="w-4 h-4 text-amber-400 shrink-0" />
             <div>
-              <div className="text-[10px] text-slate-400 uppercase tracking-wider font-mono">
+              <div className="text-[10px] text-stone-400 uppercase tracking-wider font-mono">
                 Dual Standard Correlation
               </div>
-              <div className="text-xs font-semibold text-slate-200">
-                {secondaryLabel}: <span className="font-mono text-cyan-300 font-bold">{secondaryData.aqi}</span> ({secondaryData.category})
+              <div className="text-xs font-semibold text-stone-200">
+                {secondaryLabel}: <span className="font-mono text-amber-300 font-bold">{secondaryData.aqi}</span> ({secondaryData.category})
               </div>
             </div>
           </div>
-          <div className="flex items-center text-xs text-cyan-400 font-medium gap-0.5 group-hover:translate-x-0.5 transition-transform">
+          <div className="flex items-center text-xs text-amber-400 font-medium gap-0.5 group-hover:translate-x-0.5 transition-transform">
             <span>Switch</span>
             <ChevronRight className="w-4 h-4" />
           </div>
