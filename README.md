@@ -10,7 +10,7 @@
 
 > **AetherGuard** is a production-grade, zero-key, real-time air quality and environmental health intelligence platform. Built for everyday citizens, athletes, schools, medical professionals, and municipal agencies, AetherGuard bridges the critical gap between raw atmospheric chemistry and actionable human health dosimetry.
 >
-> Originally created as the **1st-Place Submission for the LETS CODE DIWALI CHALLENGE 2026** (Theme: *Technology for Cleaner Air*), AetherGuard is engineered for indefinite, sustainable, long-term public service with zero operating costs.
+> Originally created as the ** Submission for the LETS CODE DIWALI CHALLENGE 2026** (Theme: *Technology for Cleaner Air*), AetherGuard is engineered for indefinite, sustainable, long-term public service with zero operating costs.
 
 ---
 
