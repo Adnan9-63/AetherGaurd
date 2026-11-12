@@ -11,7 +11,6 @@
 
 > 🌐 **Live Production Application:** **[https://aether-gaurd.vercel.app/](https://aether-gaurd.vercel.app/)**  
 > 📂 **GitHub Target Repository:** **[https://github.com/Adnan9-63/AetherGaurd](https://github.com/Adnan9-63/AetherGaurd)**  
-> 🪔 **Hackathon Submission:** **[LETS CODE DIWALI CHALLENGE 2026](https://forms.gle/8ck7stXe8W61U2t88)** (Theme: *Technology for Cleaner Air*)
 
 ---
 
